@@ -2,10 +2,10 @@
 -- version 4.4.15.5
 -- http://www.phpmyadmin.net
 --
--- Host: 127.0.0.1:8888
--- Generation Time: Apr 20, 2017 at 07:12 PM
+-- Host: 127.0.0.1:3306
+-- Generation Time: Apr 20, 2017 at 11:32 PM
 -- Server version: 5.6.34-log
--- PHP Version: 7.0.13
+-- PHP Version: 5.6.28
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 SET time_zone = "+00:00";
@@ -17,8 +17,19 @@ SET time_zone = "+00:00";
 /*!40101 SET NAMES utf8mb4 */;
 
 --
--- Database: `airport_management_system`
+-- Database: `airport management system`
 --
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `airline`
+--
+
+CREATE TABLE IF NOT EXISTS `airline` (
+  `Airline_name` varchar(20) NOT NULL,
+  `Carrier_ID` int(11) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 -- --------------------------------------------------------
 
@@ -190,13 +201,20 @@ CREATE TABLE IF NOT EXISTS `vendor` (
 --
 
 CREATE TABLE IF NOT EXISTS `v_generates` (
-  `S_Num` int(11) NOT NULL,
+  `Vendor_ID` int(11) NOT NULL,
   `I_Number` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 --
 -- Indexes for dumped tables
 --
+
+--
+-- Indexes for table `airline`
+--
+ALTER TABLE `airline`
+  ADD PRIMARY KEY (`Carrier_ID`),
+  ADD KEY `Carrier_ID` (`Carrier_ID`);
 
 --
 -- Indexes for table `atc`
@@ -219,14 +237,16 @@ ALTER TABLE `controls`
 ALTER TABLE `flight`
   ADD PRIMARY KEY (`Flight_no`),
   ADD UNIQUE KEY `Flight#` (`Flight_no`),
-  ADD KEY `Flight_no` (`Flight_no`);
+  ADD KEY `Flight_no` (`Flight_no`),
+  ADD KEY `C_ID` (`C_ID`);
 
 --
 -- Indexes for table `flight_instance`
 --
 ALTER TABLE `flight_instance`
   ADD PRIMARY KEY (`Flight_code`),
-  ADD KEY `Fl_no` (`Fl_no`);
+  ADD KEY `Fl_no` (`Fl_no`),
+  ADD KEY `T_ID` (`T_ID`);
 
 --
 -- Indexes for table `fl_generates`
@@ -242,7 +262,7 @@ ALTER TABLE `fl_generates`
 ALTER TABLE `invoice`
   ADD PRIMARY KEY (`Invoice_no`),
   ADD KEY `Invoice_no` (`Invoice_no`),
-  ADD KEY `S_no` (`V_ID`);
+  ADD KEY `V_ID` (`V_ID`);
 
 --
 -- Indexes for table `operational_days`
@@ -293,14 +313,14 @@ ALTER TABLE `vehicle`
 --
 ALTER TABLE `vendor`
   ADD PRIMARY KEY (`Vendor_ID`),
-  ADD KEY `Shop_no` (`Shop_no`);
+  ADD KEY `Vendor_ID` (`Vendor_ID`);
 
 --
 -- Indexes for table `v_generates`
 --
 ALTER TABLE `v_generates`
-  ADD PRIMARY KEY (`S_Num`,`I_Number`),
-  ADD KEY `S_Num` (`S_Num`),
+  ADD PRIMARY KEY (`Vendor_ID`,`I_Number`),
+  ADD KEY `Vendor_ID` (`Vendor_ID`),
   ADD KEY `I_Number` (`I_Number`);
 
 --
@@ -315,10 +335,17 @@ ALTER TABLE `controls`
   ADD CONSTRAINT `Tow_id_num_FK` FOREIGN KEY (`Tow_ID_num`) REFERENCES `atc` (`Tower_ID`) ON DELETE NO ACTION ON UPDATE NO ACTION;
 
 --
+-- Constraints for table `flight`
+--
+ALTER TABLE `flight`
+  ADD CONSTRAINT `C_ID_FK` FOREIGN KEY (`C_ID`) REFERENCES `airline` (`Carrier_ID`);
+
+--
 -- Constraints for table `flight_instance`
 --
 ALTER TABLE `flight_instance`
-  ADD CONSTRAINT `Fl_no_FK` FOREIGN KEY (`Fl_no`) REFERENCES `flight` (`Flight_no`) ON DELETE NO ACTION ON UPDATE NO ACTION;
+  ADD CONSTRAINT `Fl_no_FK` FOREIGN KEY (`Fl_no`) REFERENCES `flight` (`Flight_no`) ON DELETE NO ACTION ON UPDATE NO ACTION,
+  ADD CONSTRAINT `T_ID_FK2` FOREIGN KEY (`T_ID`) REFERENCES `atc` (`Tower_ID`);
 
 --
 -- Constraints for table `fl_generates`
@@ -331,7 +358,7 @@ ALTER TABLE `fl_generates`
 -- Constraints for table `invoice`
 --
 ALTER TABLE `invoice`
-  ADD CONSTRAINT `S_no_FK` FOREIGN KEY (`V_ID`) REFERENCES `vendor` (`Shop_no`) ON DELETE NO ACTION ON UPDATE NO ACTION;
+  ADD CONSTRAINT `V_ID_FK2` FOREIGN KEY (`V_ID`) REFERENCES `vendor` (`Vendor_ID`);
 
 --
 -- Constraints for table `operational_days`
@@ -361,15 +388,15 @@ ALTER TABLE `staff`
 -- Constraints for table `uses`
 --
 ALTER TABLE `uses`
-  ADD CONSTRAINT `S_id_FK` FOREIGN KEY (`S_ID_num`) REFERENCES `vendor` (`Shop_no`) ON DELETE NO ACTION ON UPDATE NO ACTION,
+  ADD CONSTRAINT `S_id_FK` FOREIGN KEY (`S_ID_num`) REFERENCES `staff` (`Staff_ID`) ON DELETE NO ACTION ON UPDATE NO ACTION,
   ADD CONSTRAINT `V_id_FK` FOREIGN KEY (`V_ID_num`) REFERENCES `vehicle` (`VID`) ON DELETE NO ACTION ON UPDATE NO ACTION;
 
 --
 -- Constraints for table `v_generates`
 --
 ALTER TABLE `v_generates`
-  ADD CONSTRAINT `I_num_FK2` FOREIGN KEY (`I_Number`) REFERENCES `invoice` (`Invoice_no`) ON DELETE NO ACTION ON UPDATE NO ACTION,
-  ADD CONSTRAINT `S_num_FK` FOREIGN KEY (`S_Num`) REFERENCES `vendor` (`Shop_no`) ON DELETE NO ACTION ON UPDATE NO ACTION;
+  ADD CONSTRAINT `I_Number_FK` FOREIGN KEY (`I_Number`) REFERENCES `invoice` (`Invoice_no`) ON DELETE NO ACTION ON UPDATE NO ACTION,
+  ADD CONSTRAINT `Vendor_ID_FK2` FOREIGN KEY (`Vendor_ID`) REFERENCES `vendor` (`Vendor_ID`) ON DELETE NO ACTION ON UPDATE NO ACTION;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
 /*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
