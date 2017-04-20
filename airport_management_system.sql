@@ -2,8 +2,8 @@
 -- version 4.4.15.5
 -- http://www.phpmyadmin.net
 --
--- Host: 127.0.0.1:8889
--- Generation Time: Apr 19, 2017 at 11:11 PM
+-- Host: 127.0.0.1:8888
+-- Generation Time: Apr 20, 2017 at 07:12 PM
 -- Server version: 5.6.34-log
 -- PHP Version: 7.0.13
 
@@ -51,11 +51,11 @@ CREATE TABLE IF NOT EXISTS `controls` (
 
 CREATE TABLE IF NOT EXISTS `flight` (
   `Flight_no` int(11) NOT NULL,
-  `Airline` varchar(20) NOT NULL,
   `Seat_capacity` int(11) NOT NULL,
   `Aircraft_type` varchar(20) NOT NULL,
   `Origin` varchar(20) NOT NULL,
-  `Destination` varchar(20) NOT NULL
+  `Destination` varchar(20) NOT NULL,
+  `C_ID` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 -- --------------------------------------------------------
@@ -71,7 +71,8 @@ CREATE TABLE IF NOT EXISTS `flight_instance` (
   `Seat_Availability` int(11) NOT NULL,
   `Estimated_Departure_Time` time NOT NULL,
   `Estimated_Arrival_Time` int(11) NOT NULL,
-  `Fl_no` int(11) NOT NULL
+  `Fl_no` int(11) NOT NULL,
+  `T_ID` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 -- --------------------------------------------------------
@@ -82,8 +83,7 @@ CREATE TABLE IF NOT EXISTS `flight_instance` (
 
 CREATE TABLE IF NOT EXISTS `fl_generates` (
   `F_Code` varchar(20) NOT NULL,
-  `I_Num` int(11) NOT NULL,
-  `Carrier_ID` varchar(20) NOT NULL
+  `I_Num` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 -- --------------------------------------------------------
@@ -95,7 +95,7 @@ CREATE TABLE IF NOT EXISTS `fl_generates` (
 CREATE TABLE IF NOT EXISTS `invoice` (
   `Invoice_no` int(11) NOT NULL,
   `Amount` int(11) NOT NULL,
-  `S_no` int(11) NOT NULL
+  `V_ID` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 -- --------------------------------------------------------
@@ -179,7 +179,8 @@ CREATE TABLE IF NOT EXISTS `vendor` (
   `Hours_open` varchar(20) NOT NULL,
   `Location` varchar(20) NOT NULL,
   `Type` varchar(20) NOT NULL,
-  `Company` varchar(20) NOT NULL
+  `Company` varchar(20) NOT NULL,
+  `Vendor_ID` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 -- --------------------------------------------------------
@@ -190,8 +191,7 @@ CREATE TABLE IF NOT EXISTS `vendor` (
 
 CREATE TABLE IF NOT EXISTS `v_generates` (
   `S_Num` int(11) NOT NULL,
-  `I_Number` int(11) NOT NULL,
-  `Vendor_ID` varchar(20) NOT NULL
+  `I_Number` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 --
@@ -209,6 +209,7 @@ ALTER TABLE `atc`
 -- Indexes for table `controls`
 --
 ALTER TABLE `controls`
+  ADD PRIMARY KEY (`F_Code`,`Tow_ID_num`),
   ADD KEY `F_Code` (`F_Code`),
   ADD KEY `Tow_ID_num` (`Tow_ID_num`);
 
@@ -241,7 +242,7 @@ ALTER TABLE `fl_generates`
 ALTER TABLE `invoice`
   ADD PRIMARY KEY (`Invoice_no`),
   ADD KEY `Invoice_no` (`Invoice_no`),
-  ADD KEY `S_no` (`S_no`);
+  ADD KEY `S_no` (`V_ID`);
 
 --
 -- Indexes for table `operational_days`
@@ -291,7 +292,7 @@ ALTER TABLE `vehicle`
 -- Indexes for table `vendor`
 --
 ALTER TABLE `vendor`
-  ADD PRIMARY KEY (`Shop_no`),
+  ADD PRIMARY KEY (`Vendor_ID`),
   ADD KEY `Shop_no` (`Shop_no`);
 
 --
@@ -330,7 +331,7 @@ ALTER TABLE `fl_generates`
 -- Constraints for table `invoice`
 --
 ALTER TABLE `invoice`
-  ADD CONSTRAINT `S_no_FK` FOREIGN KEY (`S_no`) REFERENCES `vendor` (`Shop_no`) ON DELETE NO ACTION ON UPDATE NO ACTION;
+  ADD CONSTRAINT `S_no_FK` FOREIGN KEY (`V_ID`) REFERENCES `vendor` (`Shop_no`) ON DELETE NO ACTION ON UPDATE NO ACTION;
 
 --
 -- Constraints for table `operational_days`
